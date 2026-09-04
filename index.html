@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AntüHene AI Studio — Automatización e Inteligencia Artificial para Empresas</title>
+<meta name="description" content="Automatizamos la atención al cliente, la publicidad y los procesos de tu empresa con Inteligencia Artificial. Consultoría, implementación y acompañamiento en Neuquén y toda Argentina.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{
+  --bg:#FCFBFA;
+  --ink:#120E1F;
+  --muted:#645F73;
+  --violet:#6D28D9;
+  --violet2:#8B5CF6;
+  --cyan:#06B6D4;
+  --coral:#FB7185;
+  --amber:#F59E0B;
+  --emerald:#10B981;
+  --line: rgba(18,14,31,0.08);
+}
+*{ box-sizing:border-box; }
+html,body{ background:var(--bg); }
+body{ font-family:'Inter', sans-serif; color:var(--ink); overflow-x:hidden; }
+h1,h2,h3,.font-serif{ font-family:'Fraunces', serif; }
+::selection{ background:var(--violet); color:#fff; }
+
+a:focus-visible, button:focus-visible, summary:focus-visible{
+  outline:2px solid var(--violet); outline-offset:3px; border-radius:4px;
+}
+
+/* ---------- Scroll progress ---------- */
+#scroll-bar{
+  position:fixed; top:0; left:0; height:3px; width:0%;
+  background: linear-gradient(90deg, var(--violet), var(--cyan), var(--coral));
+  z-index:100; transition: width .1s linear;
+}
+
+/* ---------- Ambient blobs ---------- */
+#blob-field{ position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+.blob{ position:absolute; border-radius:50%; filter:blur(70px); opacity:.35; will-change:transform; }
+.blob-1{ width:520px; height:520px; background:var(--violet2); top:-160px; left:-120px; animation:blobA 22s ease-in-out infinite; }
+.blob-2{ width:460px; height:460px; background:var(--cyan); top:120px; right:-140px; animation:blobB 26s ease-in-out infinite; }
+.blob-3{ width:420px; height:420px; background:var(--coral); bottom:-120px; left:20%; animation:blobC 20s ease-in-out infinite; }
+.blob-4{ width:360px; height:360px; background:var(--amber); bottom:10%; right:10%; opacity:.22; animation:blobA 30s ease-in-out infinite reverse; }
+@keyframes blobA{ 0%,100%{transform:translate(0,0) scale(1);} 33%{transform:translate(60px,40px) scale(1.15);} 66%{transform:translate(-40px,60px) scale(.9);} }
+@keyframes blobB{ 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-70px,50px) scale(1.2);} }
+@keyframes blobC{ 0%,100%{transform:translate(0,0) scale(1);} 40%{transform:translate(50px,-40px) scale(1.1);} 70%{transform:translate(-30px,-20px) scale(.95);} }
+
+/* ---------- Cursor glow (desktop) ---------- */
+#cursor-glow{
+  position:fixed; width:420px; height:420px; border-radius:50%;
+  background: radial-gradient(circle, rgba(109,40,217,0.10) 0%, rgba(6,182,212,0.06) 45%, transparent 70%);
+  transform: translate(-50%,-50%); pointer-events:none; z-index:1;
+  transition: opacity .3s ease; opacity:0;
+}
+
+/* ---------- Layout base ---------- */
+.section{ position:relative; z-index:10; }
+.panel-solid{ background: rgba(252,251,250, 0.94); }
+
+/* ---------- Reveal on scroll ---------- */
+.reveal{ opacity:0; transform: translateY(28px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+.reveal.is-in{ opacity:1; transform:none; }
+.reveal-stagger > *{ opacity:0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.reveal-stagger.is-in > *{ opacity:1; transform:none; }
+.reveal-stagger.is-in > *:nth-child(1){ transition-delay:.02s; }
+.reveal-stagger.is-in > *:nth-child(2){ transition-delay:.10s; }
+.reveal-stagger.is-in > *:nth-child(3){ transition-delay:.18s; }
+.reveal-stagger.is-in > *:nth-child(4){ transition-delay:.26s; }
+.reveal-stagger.is-in > *:nth-child(5){ transition-delay:.34s; }
+.reveal-stagger.is-in > *:nth-child(6){ transition-delay:.42s; }
+
+@media (prefers-reduced-motion: reduce){
+  .reveal, .reveal-stagger > *{ opacity:1 !important; transform:none !important; transition:none !important; }
+  .blob{ animation:none !important; }
+}
+
+/* ---------- Gradient text ---------- */
+.grad-text{
+  background: linear-gradient(100deg, var(--violet) 0%, var(--cyan) 55%, var(--coral) 100%);
+  background-size: 220% auto;
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  animation: gradShift 8s ease infinite;
+}
+@keyframes gradShift{ 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+
+/* ---------- Buttons ---------- */
+.btn-grad{
+  background: linear-gradient(100deg, var(--violet), var(--cyan));
+  color:#fff; position:relative; overflow:hidden;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.btn-grad:hover{ transform: translateY(-2px); box-shadow: 0 14px 30px -10px rgba(109,40,217,.45); }
+.magnetic{ transition: transform .15s ease-out; }
+
+/* ---------- Nav ---------- */
+#site-header{ transition: background-color .3s ease, box-shadow .3s ease, padding .3s ease; }
+#site-header.scrolled{ background: rgba(252,251,250,0.85); backdrop-filter: blur(14px); box-shadow: 0 1px 0 var(--line); }
+.nav-link{ position:relative; }
+.nav-link::after{ content:''; position:absolute; left:0; right:0; bottom:-6px; height:2px; background: linear-gradient(90deg,var(--violet),var(--cyan)); transform:scaleX(0); transform-origin:left; transition:transform .25s ease; border-radius:2px; }
+.nav-link:hover::after{ transform:scaleX(1); }
+
+/* ---------- Marquee ---------- */
+.marquee-track{ display:flex; gap:3rem; animation: marquee 26s linear infinite; width:max-content; }
+@keyframes marquee{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+.marquee-wrap:hover .marquee-track{ animation-play-state: paused; }
+
+/* ---------- Icon draw ---------- */
+.svc-icon .fade-in{ opacity:0; transition: opacity .5s ease .9s; }
+.svc-icon.is-drawn .fade-in{ opacity:1; }
+
+/* ---------- Service cards ---------- */
+.svc-card{ position:relative; transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease; }
+.svc-card:hover{ transform: translateY(-6px); box-shadow: 0 24px 50px -20px rgba(18,14,31,.18); }
+.svc-card:hover .svc-badge{ transform: scale(1.08) rotate(-4deg); }
+.svc-badge{ transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+
+/* ---------- Process line ---------- */
+.proc-line path{ stroke-dasharray:600; stroke-dashoffset:600; transition: stroke-dashoffset 1.6s ease; }
+.proc-line.is-in path{ stroke-dashoffset:0; }
+
+/* ---------- Count up ---------- */
+.count{ font-variant-numeric: tabular-nums; }
+
+/* ---------- Mobile panel ---------- */
+#mobile-panel{ transition: transform .4s cubic-bezier(.4,0,.2,1); }
+
+/* ---------- Chat widget scrollbar ---------- */
+#chat-messages::-webkit-scrollbar{ width:4px; }
+#chat-messages::-webkit-scrollbar-thumb{ background: rgba(109,40,217,.3); border-radius:4px; }
+
+/* ---------- Hero orbit dots ---------- */
+.orbit-dot{ animation: pulseDot 2.4s ease-in-out infinite; }
+@keyframes pulseDot{ 0%,100%{ opacity:.3; transform:scale(.9);} 50%{ opacity:1; transform:scale(1.15);} }
+</style>
+</head>
+<body class="antialiased">
+
+<div id="scroll-bar"></div>
+<div id="blob-field" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
+<div id="cursor-glow" aria-hidden="true"></div>
+
+<a href="#contenido" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-[var(--violet)] focus:text-white focus:px-4 focus:py-2 focus:rounded">Saltar al contenido</a>
+
+<!-- HEADER -->
+<header id="site-header" class="fixed top-0 w-full z-50">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 h-[76px] flex items-center justify-between">
+    <a href="#inicio" class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full overflow-hidden ring-2 ring-[var(--violet2)]/30 bg-white">
+        <img src="https://images.squarespace-cdn.com/content/v1/6731338d7bf9ff2c4a935408/5b47a9ff-ef78-438a-a434-2978809c9ddf/AntuHene+Profile.jpg" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'">
+      </div>
+      <span class="font-serif text-lg tracking-wide text-[var(--ink)]">AntüHene <span class="grad-text font-semibold">AI Studio</span></span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-10 text-sm text-[var(--muted)] font-medium">
+      <a href="#como-trabajamos" class="nav-link hover:text-[var(--ink)]">Cómo trabajamos</a>
+      <a href="#servicios" class="nav-link hover:text-[var(--ink)]">Servicios</a>
+      <a href="#confianza" class="nav-link hover:text-[var(--ink)]">Confianza</a>
+      <a href="#preguntas" class="nav-link hover:text-[var(--ink)]">Preguntas</a>
+    </nav>
+
+    <a href="https://wa.me/5492996732977?text=Hola,%20quiero%20una%20consulta%20gratuita%20sobre%20automatizaci%C3%B3n%20con%20IA%20para%20mi%20empresa" target="_blank" rel="noopener"
+       class="magnetic hidden sm:inline-flex items-center gap-2 btn-grad font-semibold text-sm px-5 py-2.5 rounded-full">
+      Diagnóstico gratuito
+    </a>
+
+    <button id="menu-btn" aria-label="Abrir menú" aria-expanded="false" class="md:hidden w-10 h-10 flex items-center justify-center text-[var(--ink)]">
+      <i class="fa-solid fa-bars text-xl"></i>
+    </button>
+  </div>
+</header>
+
+<div id="mobile-overlay" class="hidden fixed inset-0 bg-black/40 z-[60]"></div>
+<div id="mobile-panel" class="fixed top-0 right-0 h-full w-[82%] max-w-xs bg-white border-l border-[var(--line)] z-[70] translate-x-full flex flex-col shadow-2xl">
+  <div class="flex items-center justify-between px-6 h-[76px] border-b border-[var(--line)]">
+    <span class="font-serif text-[var(--ink)]">Menú</span>
+    <button id="menu-close" aria-label="Cerrar menú" class="w-9 h-9 flex items-center justify-center text-[var(--ink)]"><i class="fa-solid fa-xmark text-xl"></i></button>
+  </div>
+  <nav class="flex flex-col px-6 py-8 gap-6 text-[var(--ink)] text-base">
+    <a href="#como-trabajamos" class="mobile-link">Cómo trabajamos</a>
+    <a href="#servicios" class="mobile-link">Servicios</a>
+    <a href="#confianza" class="mobile-link">Confianza</a>
+    <a href="#preguntas" class="mobile-link">Preguntas frecuentes</a>
+  </nav>
+  <div class="mt-auto p-6">
+    <a href="https://wa.me/5492996732977?text=Hola,%20quiero%20una%20consulta%20gratuita%20sobre%20automatizaci%C3%B3n%20con%20IA%20para%20mi%20empresa" target="_blank" rel="noopener" class="btn-grad flex items-center justify-center gap-2 font-bold py-3.5 rounded-full">
+      <i class="fa-brands fa-whatsapp text-lg"></i> Hablar por WhatsApp
+    </a>
+  </div>
+</div>
+
+<main id="contenido">
+
+<!-- HERO -->
+<section id="inicio" class="section relative pt-[132px] pb-20 md:pt-[172px] md:pb-28">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 grid lg:grid-cols-12 gap-14 lg:gap-10 items-center">
+
+    <div class="lg:col-span-7 space-y-7 reveal">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[var(--line)] shadow-sm text-xs font-semibold text-[var(--violet)]">
+        <span class="relative flex h-2 w-2">
+          <span class="orbit-dot absolute inline-flex h-full w-full rounded-full bg-[var(--violet)]"></span>
+        </span>
+        Software, IA conversacional y marketing, todo en un mismo equipo
+      </div>
+
+      <h1 class="text-[2.6rem] leading-[1.1] sm:text-6xl sm:leading-[1.06] font-serif text-[var(--ink)]">
+        Empresas que <span class="grad-text">responden en segundos</span>, no en días.
+      </h1>
+
+      <p class="text-lg text-[var(--muted)] leading-relaxed max-w-xl">
+        Desarrollamos software, sitios web e IA conversacional para WhatsApp, Instagram, Facebook, TikTok y LinkedIn. Te ayudamos a posicionarte en SEO local y en buscadores con IA como ChatGPT, Claude y Gemini, con marketing estratégico y Ads pensados para aumentar tus ingresos.
+      </p>
+      <p class="text-base text-[var(--muted)] leading-relaxed max-w-xl">
+        Y estamos desarrollando nuestro propio <strong class="text-[var(--ink)] font-semibold">CRM</strong>, donde vas a concentrar todo tu negocio y automatizarlo con solo dos clics.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 pt-2">
+        <a href="https://wa.me/5492996732977?text=Hola,%20quiero%20una%20consulta%20gratuita%20sobre%20automatizaci%C3%B3n%20con%20IA%20para%20mi%20empresa" target="_blank" rel="noopener"
+           class="magnetic btn-grad inline-flex items-center justify-center gap-2 font-bold text-base px-7 py-3.5 rounded-full">
+          <i class="fa-brands fa-whatsapp text-lg"></i> Agendar diagnóstico gratuito
+        </a>
+        <a href="#como-trabajamos" class="inline-flex items-center justify-center gap-2 text-[var(--ink)] bg-white border border-[var(--line)] hover:border-[var(--violet2)]/50 font-semibold text-base px-7 py-3.5 rounded-full transition-colors">
+          Ver cómo trabajamos
+        </a>
+      </div>
+
+      <div class="pt-8 grid grid-cols-3 gap-6 max-w-lg border-t border-[var(--line)]">
+        <div class="pt-6">
+          <div class="font-serif text-2xl text-[var(--ink)]"><span class="count" data-count="24">0</span>/7</div>
+          <div class="text-xs text-[var(--muted)] mt-1">Atención sin horario</div>
+        </div>
+        <div class="pt-6">
+          <div class="font-serif text-2xl text-[var(--ink)]">&lt;<span class="count" data-count="1">0</span> min</div>
+          <div class="text-xs text-[var(--muted)] mt-1">Primera respuesta</div>
+        </div>
+        <div class="pt-6">
+          <div class="font-serif text-2xl text-[var(--ink)]">Sin costo</div>
+          <div class="text-xs text-[var(--muted)] mt-1">Diagnóstico inicial</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lg:col-span-5 reveal" style="transition-delay:.15s">
+      <div class="relative bg-white rounded-2xl p-6 sm:p-8 shadow-xl shadow-[var(--violet)]/5 border border-[var(--line)]">
+        <div class="absolute -top-3 -right-3 bg-gradient-to-r from-[var(--violet)] to-[var(--cyan)] text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-lg">
+          IA en vivo
+        </div>
+        <p class="text-xs uppercase tracking-wide text-[var(--muted)] mb-6">Así responde tu asistente en WhatsApp</p>
+
+        <svg viewBox="0 0 340 250" class="w-full h-auto" role="img" aria-label="Diagrama: mensaje entrante, procesamiento por IA y turno confirmado">
+          <path d="M40 30 V220" stroke="url(#lineGrad)" stroke-width="2" stroke-dasharray="5 7">
+            <animate attributeName="stroke-dashoffset" values="0;-120" dur="6s" repeatCount="indefinite"/>
+          </path>
+          <defs>
+            <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#6D28D9"/>
+              <stop offset="100%" stop-color="#06B6D4"/>
+            </linearGradient>
+          </defs>
+
+          <circle cx="40" cy="30" r="7" fill="#6D28D9" class="orbit-dot"/>
+          <text x="60" y="26" fill="#120E1F" font-size="13" font-family="Inter" font-weight="600">Mensaje entrante</text>
+          <text x="60" y="44" fill="#645F73" font-size="11" font-family="Inter">"Hola, ¿tienen turno para el jueves?"</text>
+
+          <circle cx="40" cy="122" r="7" fill="#06B6D4" class="orbit-dot" style="animation-delay:.6s"/>
+          <text x="60" y="118" fill="#120E1F" font-size="13" font-family="Inter" font-weight="600">El asistente IA responde</text>
+          <text x="60" y="136" fill="#645F73" font-size="11" font-family="Inter">Consulta disponibilidad y confirma datos</text>
+
+          <circle cx="40" cy="214" r="7" fill="#FB7185" class="orbit-dot" style="animation-delay:1.2s"/>
+          <text x="60" y="210" fill="#120E1F" font-size="13" font-family="Inter" font-weight="600">Turno agendado</text>
+          <text x="60" y="228" fill="#645F73" font-size="11" font-family="Inter">Se registra en tu calendario y CRM</text>
+        </svg>
+
+        <div class="mt-2 pt-5 border-t border-[var(--line)] flex items-center justify-between text-xs">
+          <span class="text-[var(--muted)]">Tiempo total del proceso</span>
+          <span class="grad-text font-bold">32 segundos</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marquee -->
+  <div class="marquee-wrap mt-16 border-y border-[var(--line)] py-5 overflow-hidden reveal">
+    <div class="marquee-track text-sm font-semibold text-[var(--muted)]">
+      <span>WhatsApp</span><span class="text-[var(--line)]">◆</span>
+      <span>Instagram</span><span class="text-[var(--line)]">◆</span>
+      <span>Facebook</span><span class="text-[var(--line)]">◆</span>
+      <span>TikTok</span><span class="text-[var(--line)]">◆</span>
+      <span>LinkedIn</span><span class="text-[var(--line)]">◆</span>
+      <span>Google Ads</span><span class="text-[var(--line)]">◆</span>
+      <span>Meta Ads</span><span class="text-[var(--line)]">◆</span>
+      <span>SEO Local</span><span class="text-[var(--line)]">◆</span>
+      <span>SEO para ChatGPT · Claude · Gemini</span><span class="text-[var(--line)]">◆</span>
+      <span>CRM propio</span><span class="text-[var(--line)]">◆</span>
+      <span>WhatsApp</span><span class="text-[var(--line)]">◆</span>
+      <span>Instagram</span><span class="text-[var(--line)]">◆</span>
+      <span>Facebook</span><span class="text-[var(--line)]">◆</span>
+      <span>TikTok</span><span class="text-[var(--line)]">◆</span>
+      <span>LinkedIn</span><span class="text-[var(--line)]">◆</span>
+      <span>Google Ads</span><span class="text-[var(--line)]">◆</span>
+      <span>Meta Ads</span><span class="text-[var(--line)]">◆</span>
+      <span>SEO Local</span><span class="text-[var(--line)]">◆</span>
+      <span>SEO para ChatGPT · Claude · Gemini</span><span class="text-[var(--line)]">◆</span>
+      <span>CRM propio</span>
+    </div>
+  </div>
+</section>
+
+<!-- COMO TRABAJAMOS -->
+<section id="como-trabajamos" class="section py-24 md:py-28">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+    <div class="max-w-2xl mb-16 reveal">
+      <h2 class="font-serif text-3xl sm:text-4xl text-[var(--ink)] mb-4">Cómo trabajamos con tu empresa</h2>
+      <p class="text-[var(--muted)] text-lg leading-relaxed">No hace falta que entiendas de tecnología. Diseñamos, configuramos y probamos cada sistema antes de que tu equipo lo use.</p>
+    </div>
+
+    <div class="relative">
+      <svg class="proc-line hidden md:block absolute top-6 left-0 w-full" height="4" viewBox="0 0 800 4" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 2 H800" stroke="url(#procGrad)" stroke-width="2"/>
+        <defs>
+          <linearGradient id="procGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#6D28D9"/>
+            <stop offset="50%" stop-color="#06B6D4"/>
+            <stop offset="100%" stop-color="#FB7185"/>
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <div class="grid md:grid-cols-3 gap-x-10 gap-y-14 reveal-stagger">
+        <div>
+          <div class="w-12 h-12 rounded-full bg-white border-2 border-[var(--violet)] flex items-center justify-center font-serif text-lg text-[var(--violet)] mb-5 shadow-sm">01</div>
+          <h3 class="font-serif text-xl text-[var(--ink)] mb-3">Diagnóstico y diseño</h3>
+          <p class="text-[var(--muted)] text-sm leading-relaxed">Analizamos cómo llegan hoy tus clientes y dónde se pierden tiempo o ventas. De ahí sale un plan concreto, con etapas y plazos.</p>
+        </div>
+        <div>
+          <div class="w-12 h-12 rounded-full bg-white border-2 border-[var(--cyan)] flex items-center justify-center font-serif text-lg text-[var(--cyan)] mb-5 shadow-sm">02</div>
+          <h3 class="font-serif text-xl text-[var(--ink)] mb-3">Implementación</h3>
+          <p class="text-[var(--muted)] text-sm leading-relaxed">Configuramos el asistente de IA, conectamos tus canales y probamos cada flujo con casos reales antes de publicarlo.</p>
+        </div>
+        <div>
+          <div class="w-12 h-12 rounded-full bg-white border-2 border-[var(--coral)] flex items-center justify-center font-serif text-lg text-[var(--coral)] mb-5 shadow-sm">03</div>
+          <h3 class="font-serif text-xl text-[var(--ink)] mb-3">Acompañamiento</h3>
+          <p class="text-[var(--muted)] text-sm leading-relaxed">Medimos resultados, ajustamos respuestas y sumamos funciones a medida que tu empresa crece. Nunca quedás solo con el sistema.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="servicios" class="section py-24 md:py-28">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+    <div class="max-w-2xl mb-16 reveal">
+      <h2 class="font-serif text-3xl sm:text-4xl text-[var(--ink)] mb-4">Servicios</h2>
+      <p class="text-[var(--muted)] text-lg leading-relaxed">Desarrollo de software, sitios web, IA conversacional, posicionamiento y marketing estratégico: todo lo que tu empresa necesita para vender más, en un mismo equipo de trabajo.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 reveal-stagger">
+
+      <div class="svc-card bg-white border border-[var(--line)] rounded-2xl p-7">
+        <div class="svc-icon svc-badge w-14 h-14 rounded-xl bg-violet-50 text-[var(--violet)] flex items-center justify-center mb-6">
+          <svg viewBox="0 0 48 48" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path class="draw-path" d="M8 14h32a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H20l-7 6v-6H8a2 2 0 0 1-2-2V16a2 2 0 0 1 2-2z"/>
+            <circle class="fade-in" cx="16" cy="23" r="1.6" fill="currentColor" stroke="none"/>
+            <circle class="fade-in" cx="24" cy="23" r="1.6" fill="currentColor" stroke="none"/>
+            <circle class="fade-in" cx="32" cy="23" r="1.6" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <h3 class="font-serif text-lg text-[var(--ink)] mb-2">IA conversacional multicanal</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">Un asistente con IA atiende WhatsApp, Instagram, Facebook, TikTok y LinkedIn, califica interesados y agenda turnos en tu calendario o CRM.</p>
+      </div>
+
+      <div class="svc-card bg-white border border-[var(--line)] rounded-2xl p-7">
+        <div class="svc-icon svc-badge w-14 h-14 rounded-xl bg-cyan-50 text-[var(--cyan)] flex items-center justify-center mb-6">
+          <svg viewBox="0 0 48 48" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path class="draw-path" d="M34 14a16 16 0 1 0 4 10"/>
+            <path class="draw-path" d="M40 8v10h-10"/>
+          </svg>
+        </div>
+        <h3 class="font-serif text-lg text-[var(--ink)] mb-2">Automatización de procesos</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">Conectamos tus herramientas para que las tareas repetitivas sucedan solas: facturación, contactos, seguimientos.</p>
+      </div>
+
+      <div class="svc-card bg-white border border-[var(--line)] rounded-2xl p-7">
+        <div class="svc-icon svc-badge w-14 h-14 rounded-xl bg-indigo-50 text-[var(--violet2)] flex items-center justify-center mb-6">
+          <svg viewBox="0 0 48 48" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path class="draw-path" d="M10 10h28v20H10z"/>
+            <path class="draw-path" d="M4 34h40l-5 6H9z"/>
+          </svg>
+        </div>
+        <h3 class="font-serif text-lg text-[var(--ink)] mb-2">Sitios web y software a medida</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">Sitios rápidos y responsive, y herramientas propias cuando una plantilla ya no alcanza para tu operación.</p>
+      </div>
+
+      <div class="svc-card bg-white border border-[var(--line)] rounded-2xl p-7">
+        <div class="svc-icon svc-badge w-14 h-14 rounded-xl bg-rose-50 text-[var(--coral)] flex items-center justify-center mb-6">
+          <svg viewBox="0 0 48 48" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path class="draw-path" d="M6 19v10h7l15 9V10l-15 9z"/>
+            <path class="draw-path" d="M30 17a9 9 0 0 1 0 14"/>
+          </svg>
+        </div>
+        <h3 class="font-serif text-lg text-[var(--ink)] mb-2">Marketing estratégico y Ads</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">Estrategia, campañas y optimización continua en Google, Meta y TikTok, pensadas específicamente para incrementar tus ingresos.</p>
+      </div>
+
+      <div class="svc-card bg-white border border-[var(--line)] rounded-2xl p-7">
+        <div class="svc-icon svc-badge w-14 h-14 rounded-xl bg-amber-50 text-[var(--amber)] flex items-center justify-center mb-6">
+          <svg viewBox="0 0 48 48" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path class="draw-path" d="M8 8h32a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V12a4 4 0 0 1 4-4z"/>
+            <path class="fade-in" d="M19 16l11 8-11 8z" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <h3 class="font-serif text-lg text-[var(--ink)] mb-2">Contenido y edición con IA</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">Edición de video e imagen para redes, con herramientas de IA que aceleran la producción sin perder calidad.</p>
+      </div>
+
+      <div class="svc-card bg-white border border-[var(--line)] rounded-2xl p-7">
+        <div class="svc-icon svc-badge w-14 h-14 rounded-xl bg-emerald-50 text-[var(--emerald)] flex items-center justify-center mb-6">
+          <svg viewBox="0 0 48 48" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path class="draw-path" d="M24 6c7.7 0 14 6.3 14 14 0 10.5-14 22-14 22S10 30.5 10 20c0-7.7 6.3-14 14-14z"/>
+            <circle class="fade-in" cx="24" cy="20" r="5"/>
+          </svg>
+        </div>
+        <h3 class="font-serif text-lg text-[var(--ink)] mb-2">SEO local</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">Optimizamos tu ficha de Google Business para que aparezcas primero en tu rubro y tu zona.</p>
+      </div>
+
+      <div class="svc-card bg-white border border-[var(--line)] rounded-2xl p-7">
+        <div class="svc-icon svc-badge w-14 h-14 rounded-xl bg-sky-50 flex items-center justify-center mb-6" style="color:#0284C7">
+          <svg viewBox="0 0 48 48" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle class="draw-path" cx="20" cy="20" r="12"/>
+            <path class="draw-path" d="M29 29L40 40"/>
+            <path class="fade-in" d="M36 8l1.6 3.6L41 13l-3.4 1.4L36 18l-1.6-3.6L31 13l3.4-1.4z" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <h3 class="font-serif text-lg text-[var(--ink)] mb-2">SEO para IA</h3>
+        <p class="text-[var(--muted)] text-sm leading-relaxed">Preparamos tu marca para aparecer cuando te buscan en ChatGPT, Claude y Gemini, además de en Google.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CRM PROPIO -->
+<section id="crm" class="section py-24 md:py-28 bg-gradient-to-b from-transparent via-violet-50/40 to-transparent">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+    <div class="grid lg:grid-cols-12 gap-14 items-center">
+
+      <div class="lg:col-span-6 reveal">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[var(--line)] shadow-sm text-xs font-semibold text-[var(--violet)] mb-6">
+          <span class="relative flex h-2 w-2">
+            <span class="orbit-dot absolute inline-flex h-full w-full rounded-full bg-[var(--violet)]"></span>
+          </span>
+          En desarrollo
+        </div>
+        <h2 class="font-serif text-3xl sm:text-4xl text-[var(--ink)] mb-5 leading-tight">Estamos desarrollando nuestro propio CRM</h2>
+        <p class="text-[var(--muted)] text-lg leading-relaxed mb-6">
+          Todos tus canales, conversaciones, campañas y automatizaciones concentrados en un solo lugar. Sin planillas sueltas ni sistemas que no se hablan entre sí.
+        </p>
+        <p class="text-[var(--muted)] text-lg leading-relaxed mb-8">
+          El objetivo es simple: con solo <strong class="text-[var(--ink)] font-semibold">dos clics</strong>, tu negocio queda automatizado y vendiendo <strong class="text-[var(--ink)] font-semibold">24/7</strong>.
+        </p>
+        <a href="https://wa.me/5492996732977?text=Hola,%20quiero%20saber%20m%C3%A1s%20sobre%20el%20CRM%20de%20AntüHene%20AI%20Studio" target="_blank" rel="noopener" class="magnetic inline-flex items-center gap-2 text-[var(--violet)] font-semibold text-sm border-b-2 border-[var(--violet)]/30 hover:border-[var(--violet)] pb-0.5 transition-colors">
+          Quiero enterarme cuando esté disponible <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+
+      <div class="lg:col-span-6 reveal" style="transition-delay:.15s">
+        <div class="relative bg-white rounded-2xl p-6 sm:p-8 shadow-xl shadow-[var(--violet)]/5 border border-[var(--line)]">
+          <svg viewBox="0 0 360 280" class="svc-icon w-full h-auto" role="img" aria-label="Diagrama: canales conectados a un CRM central que automatiza la venta">
+            <g stroke="url(#hubGrad)" stroke-width="1.6" fill="none">
+              <path class="draw-path" d="M180 140 L60 50"/>
+              <path class="draw-path" d="M180 140 L180 34"/>
+              <path class="draw-path" d="M180 140 L300 50"/>
+              <path class="draw-path" d="M180 140 L60 230"/>
+              <path class="draw-path" d="M180 140 L180 246"/>
+              <path class="draw-path" d="M180 140 L300 230"/>
+            </g>
+            <defs>
+              <linearGradient id="hubGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#6D28D9"/>
+                <stop offset="100%" stop-color="#06B6D4"/>
+              </linearGradient>
+            </defs>
+
+            <circle cx="180" cy="140" r="34" fill="#120E1F"/>
+            <text x="180" y="136" fill="#fff" font-size="12" font-family="Fraunces" text-anchor="middle" font-weight="600">CRM</text>
+            <text x="180" y="150" fill="#D9B8FF" font-size="8" font-family="Inter" text-anchor="middle">2 clics</text>
+
+            <circle cx="60" cy="50" r="20" fill="#EDE9FE" class="orbit-dot"/>
+            <text x="60" y="54" fill="#6D28D9" font-size="9" font-family="Inter" text-anchor="middle" font-weight="600">WhatsApp</text>
+
+            <circle cx="180" cy="34" r="20" fill="#CFFAFE" class="orbit-dot" style="animation-delay:.3s"/>
+            <text x="180" y="38" fill="#0E7490" font-size="9" font-family="Inter" text-anchor="middle" font-weight="600">Instagram</text>
+
+            <circle cx="300" cy="50" r="20" fill="#FFE4E6" class="orbit-dot" style="animation-delay:.6s"/>
+            <text x="300" y="54" fill="#BE123C" font-size="9" font-family="Inter" text-anchor="middle" font-weight="600">Facebook</text>
+
+            <circle cx="60" cy="230" r="20" fill="#FEF3C7" class="orbit-dot" style="animation-delay:.9s"/>
+            <text x="60" y="234" fill="#B45309" font-size="9" font-family="Inter" text-anchor="middle" font-weight="600">TikTok</text>
+
+            <circle cx="180" cy="246" r="20" fill="#D1FAE5" class="orbit-dot" style="animation-delay:1.2s"/>
+            <text x="180" y="250" fill="#047857" font-size="9" font-family="Inter" text-anchor="middle" font-weight="600">LinkedIn</text>
+
+            <circle cx="300" cy="230" r="20" fill="#E0E7FF" class="orbit-dot" style="animation-delay:1.5s"/>
+            <text x="300" y="234" fill="#4338CA" font-size="9" font-family="Inter" text-anchor="middle" font-weight="600">Web</text>
+          </svg>
+          <div class="mt-2 pt-5 border-t border-[var(--line)] flex items-center justify-between text-xs">
+            <span class="text-[var(--muted)]">Todos tus canales</span>
+            <span class="grad-text font-bold">un solo panel</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONFIANZA -->
+<section id="confianza" class="section py-24 md:py-28">
+  <div class="max-w-4xl mx-auto px-5 sm:px-8 reveal">
+    <div class="relative bg-white rounded-2xl p-8 sm:p-12 border border-[var(--line)] shadow-xl shadow-[var(--violet)]/5 overflow-hidden">
+      <div class="absolute -top-24 -right-24 w-56 h-56 rounded-full bg-gradient-to-br from-[var(--violet2)]/15 to-[var(--cyan)]/15 blur-2xl"></div>
+      <h2 class="font-serif text-2xl sm:text-3xl text-[var(--ink)] mb-5 relative">Por qué confiar en nosotros</h2>
+      <p class="text-[var(--muted)] leading-relaxed mb-9 relative">
+        El diagnóstico inicial no tiene costo ni compromiso. Si vemos que podemos ayudarte, te presentamos un plan de trabajo claro, con alcance y plazos definidos antes de empezar. Pagás por soluciones funcionando, no por promesas.
+      </p>
+      <div class="grid sm:grid-cols-3 gap-8 relative">
+        <div class="flex items-start gap-3">
+          <i class="fa-solid fa-file-signature text-[var(--violet)] mt-1"></i>
+          <div>
+            <h4 class="font-semibold text-[var(--ink)] text-sm">Propuestas claras</h4>
+            <p class="text-xs text-[var(--muted)] mt-1 leading-relaxed">Alcance, plazos y costos definidos antes de comenzar.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <i class="fa-solid fa-headset text-[var(--cyan)] mt-1"></i>
+          <div>
+            <h4 class="font-semibold text-[var(--ink)] text-sm">Acompañamiento real</h4>
+            <p class="text-xs text-[var(--muted)] mt-1 leading-relaxed">Seguimos ajustando el sistema después de la entrega.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <i class="fa-solid fa-bolt text-[var(--coral)] mt-1"></i>
+          <div>
+            <h4 class="font-semibold text-[var(--ink)] text-sm">Resultados visibles</h4>
+            <p class="text-xs text-[var(--muted)] mt-1 leading-relaxed">Primeros cambios operativos en días, no meses.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="preguntas" class="section py-24 md:py-28">
+  <div class="max-w-3xl mx-auto px-5 sm:px-8 reveal">
+    <h2 class="font-serif text-3xl sm:text-4xl text-[var(--ink)] mb-12">Preguntas frecuentes</h2>
+    <div class="divide-y divide-[var(--line)] border-t border-b border-[var(--line)]">
+      <details class="group py-5">
+        <summary class="flex items-center justify-between cursor-pointer text-[var(--ink)] font-medium list-none">
+          <span>¿Necesito conocimientos técnicos para trabajar con ustedes?</span>
+          <i class="fa-solid fa-plus text-[var(--violet)] text-sm group-open:rotate-45 transition-transform"></i>
+        </summary>
+        <p class="text-[var(--muted)] text-sm leading-relaxed mt-3 pr-6">No. Nosotros configuramos, probamos y mantenemos cada sistema. Vos solo definís cómo querés que se atienda a tus clientes.</p>
+      </details>
+      <details class="group py-5">
+        <summary class="flex items-center justify-between cursor-pointer text-[var(--ink)] font-medium list-none">
+          <span>¿Cuánto cuesta el servicio?</span>
+          <i class="fa-solid fa-plus text-[var(--violet)] text-sm group-open:rotate-45 transition-transform"></i>
+        </summary>
+        <p class="text-[var(--muted)] text-sm leading-relaxed mt-3 pr-6">Depende del alcance de cada proyecto. Por eso el diagnóstico inicial es gratuito: analizamos tu caso y enviamos una propuesta con costo cerrado antes de empezar.</p>
+      </details>
+      <details class="group py-5">
+        <summary class="flex items-center justify-between cursor-pointer text-[var(--ink)] font-medium list-none">
+          <span>¿En cuánto tiempo puedo empezar a usarlo?</span>
+          <i class="fa-solid fa-plus text-[var(--violet)] text-sm group-open:rotate-45 transition-transform"></i>
+        </summary>
+        <p class="text-[var(--muted)] text-sm leading-relaxed mt-3 pr-6">Los primeros flujos de atención suelen estar operativos en días. Proyectos más grandes se planifican por etapas.</p>
+      </details>
+      <details class="group py-5">
+        <summary class="flex items-center justify-between cursor-pointer text-[var(--ink)] font-medium list-none">
+          <span>¿Qué pasa si necesito cambios más adelante?</span>
+          <i class="fa-solid fa-plus text-[var(--violet)] text-sm group-open:rotate-45 transition-transform"></i>
+        </summary>
+        <p class="text-[var(--muted)] text-sm leading-relaxed mt-3 pr-6">Seguimos disponibles después de la entrega para ajustar respuestas, sumar canales o escalar el sistema a medida que tu empresa crece.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="section py-24 md:py-28">
+  <div class="max-w-4xl mx-auto px-5 sm:px-8 reveal">
+    <div class="relative rounded-2xl p-10 sm:p-16 text-center overflow-hidden bg-gradient-to-br from-[var(--violet)] via-[#7C3AED] to-[var(--cyan)]">
+      <div class="absolute -top-16 -left-16 w-64 h-64 rounded-full bg-white/10 blur-2xl"></div>
+      <div class="absolute -bottom-20 -right-10 w-72 h-72 rounded-full bg-[var(--coral)]/20 blur-2xl"></div>
+      <h2 class="font-serif text-3xl sm:text-4xl text-white mb-5 leading-tight relative">¿Conversamos sobre tu empresa?</h2>
+      <p class="text-white/85 text-lg max-w-xl mx-auto mb-9 leading-relaxed relative">
+        Escribinos por WhatsApp y te respondemos con un análisis puntual de dónde podés ganar tiempo y clientes.
+      </p>
+      <a href="https://wa.me/5492996732977?text=Hola,%20quiero%20una%20consulta%20gratuita%20sobre%20automatizaci%C3%B3n%20con%20IA%20para%20mi%20empresa" target="_blank" rel="noopener"
+         class="magnetic relative inline-flex items-center gap-3 bg-white text-[var(--violet)] font-bold text-lg px-9 py-4 rounded-full hover:shadow-2xl transition-shadow">
+        <i class="fa-brands fa-whatsapp text-2xl"></i> Iniciar consulta gratuita
+      </a>
+      <p class="text-xs text-white/70 mt-6 relative"><i class="fa-solid fa-lock mr-1"></i> Sin compromiso. Respondemos personalmente.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="section border-t border-[var(--line)] py-12">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+    <div>
+      <span class="font-serif text-[var(--ink)]">AntüHene AI Studio</span>
+      <p class="text-xs text-[var(--muted)] mt-1">Automatización e Inteligencia Artificial aplicada a empresas · Neuquén, Argentina</p>
+    </div>
+    <div class="flex items-center gap-5 text-[var(--muted)]">
+      <a href="https://wa.me/5492996732977" target="_blank" rel="noopener" class="hover:text-[var(--violet)] transition-colors" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp text-lg"></i></a>
+      <a href="#inicio" class="hover:text-[var(--violet)] transition-colors text-xs">Volver arriba</a>
+    </div>
+  </div>
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 mt-6 pt-6 border-t border-[var(--line)] text-xs text-[var(--muted)]">
+    © <span id="year"></span> AntüHene AI Studio. Todos los derechos reservados.
+  </div>
+</footer>
+
+<!-- WHATSAPP WIDGET -->
+<div class="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+  <div id="whatsapp-widget" class="hidden mb-4 w-[320px] sm:w-[360px] bg-white border border-[var(--line)] rounded-2xl shadow-2xl overflow-hidden">
+    <div class="bg-gradient-to-r from-[var(--violet)] to-[var(--cyan)] p-4 flex items-center justify-between text-white">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-white/15 border border-white/20 overflow-hidden">
+          <img src="https://images.squarespace-cdn.com/content/v1/6731338d7bf9ff2c4a935408/5b47a9ff-ef78-438a-a434-2978809c9ddf/AntuHene+Profile.jpg" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'">
+        </div>
+        <div>
+          <h4 class="font-semibold text-sm leading-tight">AntüHene AI Studio</h4>
+          <p class="text-[11px] text-white/80">Suele responder en minutos</p>
+        </div>
+      </div>
+      <button id="close-widget" aria-label="Cerrar chat" class="text-white/80 hover:text-white p-1"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div id="chat-messages" class="p-4 space-y-3 max-h-[360px] overflow-y-auto bg-[var(--bg)] text-sm">
+      <div class="bg-white text-[var(--ink)] p-3 rounded-xl rounded-tl-sm border border-[var(--line)] leading-relaxed max-w-[88%] shadow-sm">
+        Hola. Soy el asistente de AntüHene AI Studio. ¿Sobre qué te gustaría consultar?
+      </div>
+
+      <div class="pt-1 space-y-2" id="faq-options">
+        <button onclick="askQuestion('que_hacen')" class="w-full text-left p-3 rounded-xl bg-white hover:bg-violet-50 border border-[var(--line)] text-[var(--ink)] transition-colors text-sm">¿Qué hacen en AntüHene AI?</button>
+        <button onclick="askQuestion('como_funciona')" class="w-full text-left p-3 rounded-xl bg-white hover:bg-violet-50 border border-[var(--line)] text-[var(--ink)] transition-colors text-sm">¿Cómo automatizan mi WhatsApp o Instagram?</button>
+        <button onclick="askQuestion('servicios')" class="w-full text-left p-3 rounded-xl bg-white hover:bg-violet-50 border border-[var(--line)] text-[var(--ink)] transition-colors text-sm">¿Hacen sitios web y publicidad?</button>
+        <button onclick="askQuestion('precios')" class="w-full text-left p-3 rounded-xl bg-white hover:bg-violet-50 border border-[var(--line)] text-[var(--ink)] transition-colors text-sm">¿Cuáles son sus tarifas?</button>
+      </div>
+    </div>
+
+    <div class="p-3 bg-white border-t border-[var(--line)]">
+      <a href="https://wa.me/5492996732977?text=Hola,%20estoy%20en%20el%20sitio%20web%20y%20quiero%20hablar%20con%20un%20asesor" target="_blank" rel="noopener" class="btn-grad w-full flex items-center justify-center gap-2 font-bold py-2.5 rounded-xl text-sm">
+        <i class="fa-brands fa-whatsapp"></i> Hablar con un asesor
+      </a>
+    </div>
+  </div>
+
+  <button id="whatsapp-toggle-btn" aria-label="Abrir chat de WhatsApp" class="bg-gradient-to-br from-[var(--violet)] to-[var(--cyan)] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl relative hover:scale-105 transition-transform">
+    <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--coral)] opacity-75"></span>
+      <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-[var(--coral)] border-2 border-white"></span>
+    </span>
+    <i class="fa-brands fa-whatsapp text-2xl"></i>
+  </button>
+</div>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* Scroll progress + header shrink */
+const header = document.getElementById('site-header');
+const scrollBar = document.getElementById('scroll-bar');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 12);
+  const h = document.documentElement;
+  const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  scrollBar.style.width = pct + '%';
+}, { passive: true });
+
+/* Cursor glow (desktop only) */
+if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  const glow = document.getElementById('cursor-glow');
+  glow.style.opacity = '1';
+  window.addEventListener('mousemove', (e) => {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+  });
+
+  document.querySelectorAll('.magnetic').forEach(btn => {
+    btn.addEventListener('mousemove', (e) => {
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width / 2) * 0.25;
+      const y = (e.clientY - r.top - r.height / 2) * 0.25;
+      btn.style.transform = `translate(${x}px, ${y}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  });
+}
+
+/* Icon draw setup */
+document.querySelectorAll('.draw-path').forEach(path => {
+  const len = path.getTotalLength ? path.getTotalLength() : 400;
+  path.style.strokeDasharray = len;
+  path.style.strokeDashoffset = len;
+  path.style.transition = 'stroke-dashoffset 1.1s ease';
+});
+
+/* Reveal on scroll */
+const revealTargets = document.querySelectorAll('.reveal, .reveal-stagger, .proc-line, .svc-icon');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('is-in');
+      if (entry.target.classList.contains('svc-icon')) {
+        entry.target.classList.add('is-drawn');
+        entry.target.querySelectorAll('.draw-path').forEach(p => p.style.strokeDashoffset = 0);
+      }
+      io.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.2 });
+revealTargets.forEach(el => io.observe(el));
+
+/* Count up */
+document.querySelectorAll('.count').forEach(el => {
+  const target = parseInt(el.dataset.count, 10);
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        let cur = 0;
+        const step = Math.max(1, Math.round(target / 30));
+        const t = setInterval(() => {
+          cur += step;
+          if (cur >= target) { cur = target; clearInterval(t); }
+          el.textContent = cur;
+        }, 30);
+        obs.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  obs.observe(el);
+});
+
+/* Mobile menu */
+const menuBtn = document.getElementById('menu-btn');
+const menuClose = document.getElementById('menu-close');
+const mobilePanel = document.getElementById('mobile-panel');
+const mobileOverlay = document.getElementById('mobile-overlay');
+function openMenu(){ mobileOverlay.classList.remove('hidden'); requestAnimationFrame(() => mobilePanel.classList.remove('translate-x-full')); menuBtn.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
+function closeMenu(){ mobilePanel.classList.add('translate-x-full'); mobileOverlay.classList.add('hidden'); menuBtn.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+menuBtn.addEventListener('click', openMenu);
+menuClose.addEventListener('click', closeMenu);
+mobileOverlay.addEventListener('click', closeMenu);
+document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', closeMenu));
+
+/* WhatsApp widget */
+const toggleBtn = document.getElementById('whatsapp-toggle-btn');
+const widget = document.getElementById('whatsapp-widget');
+const closeWidget = document.getElementById('close-widget');
+toggleBtn.addEventListener('click', () => widget.classList.toggle('hidden'));
+closeWidget.addEventListener('click', () => widget.classList.add('hidden'));
+
+function askQuestion(type){
+  const chatMessages = document.getElementById('chat-messages');
+  const answers = {
+    que_hacen: ['¿Qué hacen en AntüHene AI?', 'Ayudamos a empresas a vender más y ahorrar tiempo: asistentes de IA para WhatsApp, publicidad digital, sitios web y automatización de procesos.'],
+    como_funciona: ['¿Cómo automatizan mi WhatsApp o Instagram?', 'Conectamos tus canales con flujos de IA. Cuando llega una consulta, el sistema responde al instante, califica al interesado y lo agenda en tu calendario.'],
+    servicios: ['¿Hacen sitios web y publicidad?', 'Sí. Diseñamos sitios web profesionales, gestionamos campañas en Google, Meta y TikTok, y producimos contenido visual para redes.'],
+    precios: ['¿Cuáles son sus tarifas?', 'Cada proyecto se cotiza según su alcance. El diagnóstico inicial es gratuito y de ahí sale una propuesta con costo definido.']
+  };
+  const pair = answers[type];
+  const q = pair[0], a = pair[1];
+
+  const userMsg = document.createElement('div');
+  userMsg.className = 'flex justify-end';
+  userMsg.innerHTML = '<div class="bg-gradient-to-r from-[var(--violet)] to-[var(--cyan)] text-white p-3 rounded-xl rounded-tr-sm max-w-[88%] font-medium">' + q + '</div>';
+  chatMessages.appendChild(userMsg);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  setTimeout(() => {
+    const botMsg = document.createElement('div');
+    botMsg.className = 'max-w-[90%]';
+    botMsg.innerHTML = '<div class="bg-white text-[var(--ink)] p-3 rounded-xl rounded-tl-sm border border-[var(--line)] leading-relaxed shadow-sm">' +
+      a +
+      '<a href="https://wa.me/5492996732977?text=' + encodeURIComponent('Hola, estaba preguntando sobre: ' + q) + '" target="_blank" rel="noopener" class="block mt-3 pt-2 border-t border-[var(--line)] text-[var(--violet)] font-semibold text-xs hover:underline">Hablar con un asesor →</a>' +
+      '</div>';
+    chatMessages.appendChild(botMsg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 500);
+}
+</script>
+</body>
+</html>
